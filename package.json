@@ -1,0 +1,24 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "Proyecto Coderhouse ",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon src/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AxelAguirre100/Backend.git"
+  },
+  "author": "Aguirre Axel",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/AxelAguirre100/Backend/issues"
+  },
+  "homepage": "https://github.com/AxelAguirre100/Backend#readme",
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}

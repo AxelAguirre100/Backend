@@ -1,12 +1,4 @@
-const fs = require('fs');
-const ruta = "./productos.txt";
-const crearArchivo = async (ruta) => {
-    if (!fs.existsSync(ruta)) {
-        await fs.promises.writeFile(ruta, "[]")
-    } else if ((await fs.promises.readFile(ruta, "utf-8")).length == 0) {
-        await fs.promises.writeFile(ruta, "[]")
-    }
-}
+import fs from "fs";
 
 class Producto {
     constructor(title, description, price, thumbnail, code, stock) {
@@ -19,16 +11,29 @@ class Producto {
     }
 }
 
-const producto1 = new Producto("Remera adidas", "Remera negra", 10000, "Sin imagen", "abc1", 23);
-const producto2 = new Producto("Remera nike", "Remera Blanca", 9000, "Sin imagen", "abc2", 20);
-const producto3 = new Producto("Pantalon adidas", "Pantalones adidas", 6000, "Sin imagen", "abc3", 17);
-const productoVacio = new Producto("", "", "", "", "", "");
-const productoPrueba = new Producto("producto prueba", "producto prueba", 4400, "Sin Imagen", "abc4", 25);
+const producto1 = new Producto("Remera", "Remera adidas negra", 10000, "Sin imagen", "abc1", 23);
+const producto2 = new Producto("Remera", "Remera nike Blanca", 9000, "Sin imagen", "abc2", 20);
+const producto3 = new Producto("Pantalon", "Pantalones adidas", 6000, "Sin imagen", "abc3", 17);
+const producto4 = new Producto("Pantalon", "Pantalones nike", 5000, "Sin imagen", "abc4", 16);
+const producto5 = new Producto("Zapatillas", "Zapatillas adidas", 8000, "Sin imagen", "abc5", 18);
+const producto6 = new Producto("Zapatillas", "Zapatillas nike", 9000, "Sin imagen", "abc6", 15);
+const producto7 = new Producto("Jeans", "Jeans Wander Denim", 6000, "Sin imagen", "abc7", 14);
+const producto8 = new Producto("Zapatillas", "Zapatillas Converse", 8000, "Sin imagen", "abc8", 14);
+const producto9 = new Producto("Camisa", "Camisa Sico Urban", 7000, "Sin imagen", "abc9", 14);
+const producto10 = new Producto("Pantalones", "Pantalones Sico Urban", 6000, "Sin imagen", "abc10", 14);
 
 class ProductManager {
-    constructor() {
-        this.path = ruta;
+    constructor(path) {
+        this.path = path;
     }
+
+    checkArchivo = ()=>{
+        return fs.existsSync(this.path)       
+    }
+    crearArchivo = async () => {
+        await fs.promises.writeFile(this.path, "[]")
+    }
+
     addProduct = async (newProduct) => {
         if (toString(newProduct.id).length > 0 && newProduct.title.length > 0 && newProduct.description.length > 0 && toString(newProduct.price).length > 0 && newProduct.thumbnail.length > 0 && newProduct.code.length > 0 && toString(newProduct.stock).length > 0) {
             let contenido = await fs.promises.readFile(this.path, "utf-8");
@@ -124,23 +129,20 @@ class ProductManager {
             console.log("No se encontro el producto para actualizar")
         }
     }
+
+    cargarArchivo = async () => {
+        await this.crearArchivo();
+        await this.addProduct(producto1);
+        await this.addProduct(producto2);
+        await this.addProduct(producto3);
+        await this.addProduct(producto4);
+        await this.addProduct(producto5);
+        await this.addProduct(producto6);
+        await this.addProduct(producto7);
+        await this.addProduct(producto8);
+        await this.addProduct(producto9);
+        await this.addProduct(producto10);
+    }
 }
 
-productManager = new ProductManager()
-
-const tests = async () => {
-    await crearArchivo(ruta);
-    console.log(await productManager.getAllProducts());
-    await productManager.addProduct(productoVacio);
-    await productManager.addProduct(producto1);
-    await productManager.addProduct(producto2);
-    await productManager.addProduct(producto3);
-    await productManager.addProduct(productoPrueba);
-    console.log(await productManager.getAllProducts());
-    console.log(await productManager.getProductById(1));
-    await productManager.updateProduct({ id: 1, title: "Prueba cambiando titulo y descripcion del elemento 1", description: "Exito" });
-    console.log(await productManager.getProductById(1));
-    await productManager.deleteProductById(1);
-}
-
-tests()
+export default ProductManager;
