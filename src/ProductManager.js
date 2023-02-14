@@ -1,62 +1,76 @@
 import fs from "fs";
 
 class Producto {
-    constructor(title, description, price, thumbnail, code, stock) {
+    constructor(title, description, price, thumbnail, code, stock, status, category) {
         this.title = title;
         this.description = description;
         this.price = price;
         this.thumbnail = thumbnail;
         this.code = code;
         this.stock = stock;
+        this.status = status;
+        this.category = category;
     }
 }
 
-const producto1 = new Producto("Remera", "Remera adidas negra", 10000, "Sin imagen", "abc1", 23);
-const producto2 = new Producto("Remera", "Remera nike Blanca", 9000, "Sin imagen", "abc2", 20);
-const producto3 = new Producto("Pantalon", "Pantalones adidas", 6000, "Sin imagen", "abc3", 17);
-const producto4 = new Producto("Pantalon", "Pantalones nike", 5000, "Sin imagen", "abc4", 16);
-const producto5 = new Producto("Zapatillas", "Zapatillas adidas", 8000, "Sin imagen", "abc5", 18);
-const producto6 = new Producto("Zapatillas", "Zapatillas nike", 9000, "Sin imagen", "abc6", 15);
-const producto7 = new Producto("Jeans", "Jeans Wander Denim", 6000, "Sin imagen", "abc7", 14);
-const producto8 = new Producto("Zapatillas", "Zapatillas Converse", 8000, "Sin imagen", "abc8", 14);
-const producto9 = new Producto("Camisa", "Camisa Sico Urban", 7000, "Sin imagen", "abc9", 14);
-const producto10 = new Producto("Pantalones", "Pantalones Sico Urban", 6000, "Sin imagen", "abc10", 14);
+const producto1 = new Producto("Remera", "Remera adidas negra", 10000, ["public/img/remera-adidas"], "abc1", 23, true, "remera");
+const producto2 = new Producto("Remera", "Remera nike Blanca", 9000, ["public/img/remera-nike"], "abc2", 20, true, "remera");
+const producto3 = new Producto("Pantalon", "Pantalones adidas", 6000, ["public/img/pantalon-adidas"], "abc3", 17, true, "pantalon");
+const producto4 = new Producto("Pantalon", "Pantalones nike", 5000, ["public/img/pantalon-nike"], "abc4", 16, true, "pantalon");
+const producto5 = new Producto("Zapatillas", "Zapatillas adidas", 8000, ["public/img/zapatillas-adidas"], "abc5", 18, true, "zapatillas");
+const producto6 = new Producto("Zapatillas", "Zapatillas nike", 9000, ["public/img/zapatillas-nike"], "abc6", 15, true, "zapatillas");
+const producto7 = new Producto("Jeans", "Jeans Wander Denim", 6000, ["public/img/jeans-wander-denim"], "abc7", 14, true, "pantalon");
+const producto8 = new Producto("Zapatillas", "Zapatillas Converse", 8000, ["public/img/zapatillas-converse"], "abc8", 14, true, "zapatillas");
+const producto9 = new Producto("Camisa", "Camisa Sico Urban", 7000, ["public/img/camisa-sico-urban"], "abc9", 14, true, "camisa");
+const producto10 = new Producto("Pantalones", "Pantalones Sico Urban", 6000, ["public/img/pantalones-sico-urban"], "abc10", 14, true, "pantalon");
 
 class ProductManager {
     constructor(path) {
         this.path = path;
     }
 
-    checkArchivo = ()=>{
-        return fs.existsSync(this.path)       
+    checkArchivo = () => {
+        return fs.existsSync(this.path)
     }
     crearArchivo = async () => {
         await fs.promises.writeFile(this.path, "[]")
     }
 
     addProduct = async (newProduct) => {
-        if (toString(newProduct.id).length > 0 && newProduct.title.length > 0 && newProduct.description.length > 0 && toString(newProduct.price).length > 0 && newProduct.thumbnail.length > 0 && newProduct.code.length > 0 && toString(newProduct.stock).length > 0) {
-            let contenido = await fs.promises.readFile(this.path, "utf-8");
-            let arrayProductos = JSON.parse(contenido);
-            if (arrayProductos.filter(product => product.code == newProduct.code).length > 0) {
-                console.error("El producto ya existe");
-            } else {
+        let i = 0;
+        let cantidadCampos = 8;
+        for (const campo in newProduct) {
+            i++
+        }
+        console.log(i)
+        if (i == cantidadCampos) {
+            if (newProduct.status === true && newProduct.category.length > 0 && newProduct.title.length > 0 && newProduct.description.length > 0 && toString(newProduct.price).length > 0 && newProduct.code.length > 0 && toString(newProduct.stock).length > 0) {
                 let contenido = await fs.promises.readFile(this.path, "utf-8");
-                let aux = JSON.parse(contenido);
-                console.log()
-                if (aux.length > 0) {
-                    const idAutoincremental = aux[aux.length - 1].id + 1;
-                    aux.push({ id: idAutoincremental, ...newProduct });
-                    await fs.promises.writeFile(this.path, JSON.stringify(aux));
+                let arrayProductos = JSON.parse(contenido);
+                if (arrayProductos.filter(product => product.code == newProduct.code).length > 0) {
+                    return "El producto ya existe";
                 } else {
-                    const idAutoincremental = 1;
-                    aux.push({ id: idAutoincremental, ...newProduct });
-                    await fs.promises.writeFile(this.path, JSON.stringify(aux));
-                }
+                    let contenido = await fs.promises.readFile(this.path, "utf-8");
+                    let aux = JSON.parse(contenido);
+                    if (aux.length > 0) {
+                        const idAutoincremental = aux[aux.length - 1].id + 1; //Esto para que sea incremental dependiendo del ultimo elemento
+                        aux.push({ id: idAutoincremental, ...newProduct });
+                        console.log(aux)
+                        await fs.promises.writeFile(this.path, JSON.stringify(aux));
+                        return "Producto agregado"
+                    } else {
+                        const idAutoincremental = 1;
+                        aux.push({ id: idAutoincremental, ...newProduct });
+                        await fs.promises.writeFile(this.path, JSON.stringify(aux));
+                        return "Producto agregado"
+                    }
 
+                }
+            } else {
+                return "Los campos no deben estar vacios"
             }
         } else {
-            console.error("Los campos no deben estar vacios")
+            return `Falta o sobra al menos 1 campo (deben ser ${cantidadCampos})`
         }
     }
 
@@ -88,7 +102,7 @@ class ProductManager {
         }
     }
 
-    updateProduct = async ({ id, title, description, price, thumbnail, code, stock }) => {
+    updateProduct = async ({ id, title, description, price, thumbnail, code, stock, status, category }) => {
         let contenido = await fs.promises.readFile(this.path, 'utf-8')
         let aux = JSON.parse(contenido)
         if (aux.some(product => product.id === id)) {
@@ -113,7 +127,9 @@ class ProductManager {
                     aux[pos].thumbnail = thumbnail;
                 }
             }
-            if (code != undefined) {
+            if (aux.some(prod => prod.code == code)) {
+                return "No puede poner un codigo que ya existe"
+            } else if (code != undefined) {
                 if (code.length > 0) {
                     aux[pos].code = code;
                 }
@@ -121,6 +137,18 @@ class ProductManager {
             if (stock != undefined) {
                 if (stock.length > 0) {
                     aux[pos].stock = parseInt(stock);
+                }
+            }
+            if (status != undefined) {
+                if (status == false) {
+                    aux[pos].status = false;
+                } else {
+                    aux[pos].status = true;
+                }
+            }
+            if (category != undefined) {
+                if (category.length > 0) {
+                    aux[pos].category = category;
                 }
             }
             await fs.promises.writeFile(this.path, JSON.stringify(aux))
