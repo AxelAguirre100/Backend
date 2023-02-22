@@ -24,7 +24,7 @@ const producto8 = new Producto("Zapatillas", "Zapatillas Converse", 8000, ["publ
 const producto9 = new Producto("Camisa", "Camisa Sico Urban", 7000, ["public/img/camisa-sico-urban"], "abc9", 14, true, "camisa");
 const producto10 = new Producto("Pantalones", "Pantalones Sico Urban", 6000, ["public/img/pantalones-sico-urban"], "abc10", 14, true, "pantalon");
 
-class ProductManager {
+export class ProductManager {
     constructor(path) {
         this.path = path;
     }
@@ -35,39 +35,37 @@ class ProductManager {
     crearArchivo = async () => {
         await fs.promises.writeFile(this.path, "[]")
     }
-
     addProduct = async (newProduct) => {
         let i = 0;
         let cantidadCampos = 8;
         for (const campo in newProduct) {
             i++
         }
-        console.log(i)
         if (i == cantidadCampos) {
             if (newProduct.status === true && newProduct.category.length > 0 && newProduct.title.length > 0 && newProduct.description.length > 0 && toString(newProduct.price).length > 0 && newProduct.code.length > 0 && toString(newProduct.stock).length > 0) {
                 let contenido = await fs.promises.readFile(this.path, "utf-8");
                 let arrayProductos = JSON.parse(contenido);
                 if (arrayProductos.filter(product => product.code == newProduct.code).length > 0) {
-                    return "El producto ya existe";
-                } else {
+                    return "Ya existe el producto";
+                }
+                else {
                     let contenido = await fs.promises.readFile(this.path, "utf-8");
                     let aux = JSON.parse(contenido);
                     if (aux.length > 0) {
                         const idAutoincremental = aux[aux.length - 1].id + 1; //Esto para que sea incremental dependiendo del ultimo elemento
                         aux.push({ id: idAutoincremental, ...newProduct });
-                        console.log(aux)
                         await fs.promises.writeFile(this.path, JSON.stringify(aux));
-                        return "Producto agregado"
-                    } else {
+                        return "Producto Agregado"
+                    }
+                    else {
                         const idAutoincremental = 1;
                         aux.push({ id: idAutoincremental, ...newProduct });
                         await fs.promises.writeFile(this.path, JSON.stringify(aux));
                         return "Producto agregado"
                     }
-
                 }
             } else {
-                return "Los campos no deben estar vacios"
+                return "No puede tener campos vacios"
             }
         } else {
             return `Falta o sobra al menos 1 campo (deben ser ${cantidadCampos})`
@@ -79,29 +77,6 @@ class ProductManager {
         let aux = JSON.parse(contenido)
         return aux;
     }
-
-    getProductById = async (id) => {
-        let contenido = await fs.promises.readFile(this.path, 'utf-8')
-        let aux = JSON.parse(contenido)
-        if (aux.some(product => product.id === id)) {
-            let pos = aux.findIndex(product => product.id === id)
-            return aux[pos];
-        } else {
-            return "No se encontró el producto que desea ver"
-        }
-    }
-    deleteProductById = async (id) => {
-        let contenido = await fs.promises.readFile(this.path, 'utf-8')
-        let aux = JSON.parse(contenido)
-        if (aux.some(product => product.id === id)) {
-            const arraySinElIdSeleccionado = aux.filter(product => product.id != id);
-            await fs.promises.writeFile(this.path, JSON.stringify(arraySinElIdSeleccionado))
-            console.log("Producto eliminado exitosamente");
-        } else {
-            console.error("No se encontró el producto que desea eliminar")
-        }
-    }
-
     updateProduct = async ({ id, title, description, price, thumbnail, code, stock, status, category }) => {
         let contenido = await fs.promises.readFile(this.path, 'utf-8')
         let aux = JSON.parse(contenido)
@@ -152,9 +127,31 @@ class ProductManager {
                 }
             }
             await fs.promises.writeFile(this.path, JSON.stringify(aux))
-            console.log("Producto actualizado exitosamente");
+            return "Producto actualizado exitosamente";
         } else {
-            console.log("No se encontro el producto para actualizar")
+            return "Producto no encontrado para actualizar"
+        }
+    }
+    getProductById = async (id) => {
+        let contenido = await fs.promises.readFile(this.path, 'utf-8')
+        let aux = JSON.parse(contenido)
+        if (aux.some(product => product.id === id)) {
+            let pos = aux.findIndex(product => product.id === id)
+            return aux[pos];
+        } else {
+            return null
+        }
+    }
+
+    deleteProductById = async (id) => {
+        let contenido = await fs.promises.readFile(this.path, 'utf-8')
+        let aux = JSON.parse(contenido)
+        if (aux.some(product => product.id === id)) {
+            const arraySinElIdSeleccionado = aux.filter(product => product.id != id);
+            await fs.promises.writeFile(this.path, JSON.stringify(arraySinElIdSeleccionado))
+            return "Producto eliminado exitosamente";
+        } else {
+            return "No se encontró el producto que desea eliminar"
         }
     }
 
@@ -172,5 +169,3 @@ class ProductManager {
         await this.addProduct(producto10);
     }
 }
-
-export default ProductManager;
