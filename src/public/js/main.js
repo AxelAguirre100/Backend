@@ -1,7 +1,7 @@
 const socket = io();
 const form = document.getElementById("realTimeProductsForm")
 
-form.addEventListener("submit", (e)=>{
+form.addEventListener("submit", (e) => {
     e.preventDefault();
     const title = document.getElementById("formTitle").value
     const description = document.getElementById("formDescription").value
@@ -10,19 +10,19 @@ form.addEventListener("submit", (e)=>{
     const code = document.getElementById("formCode").value
     const stock = document.getElementById("formStock").value
     const category = document.getElementById("formCategory").value
-    const product = {title,description,price,thumbnail,code,stock,category}    
-    socket.emit("addProduct", product) 
+    const producto = { title, description, price, thumbnail, code, stock, category }
+    socket.emit("addProduct", producto)
 })
 
-socket.on("mensajeProductoAgregado",mensaje=>{
+socket.on("mensajeProductoAgregado", mensaje => {
     console.log(mensaje)
 })
 
-socket.on("getProducts", products =>{
-    document.getElementById("productsCard").innerHTML=""
-    products.forEach(product => {
-        document.getElementById("productsCard").innerHTML+=  
-        `
+socket.on("getProducts", productos => {
+    document.getElementById("productsCard").innerHTML = ""
+    productos.forEach(product => {
+        document.getElementById("productsCard").innerHTML +=
+            `
         <div class="card col-sm-2 cardProduct">
         <img class="card-img-top imagenCardProducts" src="${product.thumbnail}" alt="Card image cap">
         <div class="card-body">
@@ -36,12 +36,9 @@ socket.on("getProducts", products =>{
         `
     });
 
-    products.forEach(product=>{
-        document.getElementById(`botonProducto${product.id}`).addEventListener("click",(e)=>{
-            socket.emit("deleteProduct", product.id) 
-            socket.on("mensajeProductoEliminado",mensaje=>{
-                console.log(mensaje)
-            })
+    productos.forEach(product => {
+        document.getElementById(`botonProducto${product.id}`).addEventListener("click", (e) => {
+            socket.emit("deleteProduct", product.id)
         })
     })
 })

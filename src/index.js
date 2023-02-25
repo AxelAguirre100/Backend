@@ -4,10 +4,11 @@ import { __dirname, __filename } from "./path.js";
 import { engine } from 'express-handlebars';
 import * as path from 'path';
 import { Server } from "socket.io";
-import { ProductManager } from "./controllers/ProductManager.js";
 import routerSocket from "./routes/socket.routes.js";
+import { createRequire } from 'node:module';
+const require = createRequire(import.meta.url);
+let productos = require('./models/products.json')
 
-const productManager =  new ProductManager('src/models/products.json');
 const app = express();
 const PORT = 8080 
 
@@ -15,22 +16,35 @@ const server = app.listen(PORT, () => {
   console.log(`Server on port ${PORT}`);
 });
 
+routerSocket.get('/realtimeproducts', async (req, res) => {
+  res.render("realTimeProducts", {
+    titulo: "Desafio 4 Real Time Products",
+    products: productos
+  });
+});
+
+routerSocket.get('/', async (req, res) => {
+  res.render("index", {
+    titulo: "Desafio 4",
+    products: productos
+  });
+});
+
+
 const io = new Server(server);
 
 io.on("connection", async(socket)=>{
   console.log("Cliente conectado");
-  socket.on("addProduct", async info =>{
-    const newProduct = {...info, status:true };
-    var mensajeAgregar = await productManager.addProduct(newProduct);
-    socket.emit("mensajeProductoAgregado",mensajeAgregar);
-    console.log(mensajeAgregar);
+  socket.on("addProduct", (data) =>{
+    productos.push(data);
+    io.sockets.emit('productos', productos);
+    io.sockets.emit('getProducts', productos);
   });
-  socket.on("deleteProduct", async id=>{
-    var mensajeBorrar = await productManager.deleteProductById(id);
-    socket.emit("mensajeProductoEliminado",mensajeBorrar);
-    console.log(mensajeBorrar);
+  socket.on("deleteProduct", (data)=>{
+    productos = productos.filter((producto) => producto.id != data);
+    io.sockets.emit('getProducts', productos);
   });
-  socket.emit("getProducts",  await productManager.getAllProducts());
+  socket.emit("getProducts",  productos);
 });
 
 app.use(express.json());
