@@ -1,57 +1,68 @@
+import "dotenv/config"
 import express from "express";
-import routerProduct from "./routes/products.routes.js";
-import { __dirname, __filename } from "./path.js";
-import { engine } from 'express-handlebars';
-import * as path from 'path';
 import { Server } from "socket.io";
+import { getManagerMessages, getManagerProducts} from "./dao/daoManager.js";
+import { __dirname, __filename } from "./path.js";
 import routerSocket from "./routes/socket.routes.js";
-import { createRequire } from 'node:module';
-const require = createRequire(import.meta.url);
-let productos = require('./models/products.json')
+import routerProduct from "./routes/products.routes.js";
+import routerCart from "./routes/cart.routes.js";
+import { engine } from 'express-handlebars';
+import * as path from 'path'
+import routerChat from "./routes/chat.routes.js";
+import { ProductManager } from "./dao/FileSystem/models/ProductManager.js";
+const app = express()
 
-const app = express();
-const PORT = 8080 
+const productManager = new ProductManager("src/dao/FileSystem/Files/products.json");
 
-const server = app.listen(PORT, () => {
-  console.log(`Server on port ${PORT}`);
-});
+app.use(express.json())
+app.use(express.urlencoded({ extended: true }))
+app.engine("handlebars", engine());
+app.set("view engine", "handlebars");
+app.set("views", path.resolve(__dirname, "./views"));
+app.set("port", process.env.PORT || 8080)
 
-routerSocket.get('/realtimeproducts', async (req, res) => {
-  res.render("realTimeProducts", {
-    titulo: "Desafio 4 Real Time Products",
-    products: productos
-  });
-});
+const server = app.listen(app.get("port"), () => console.log(`Server on port ${app.get("port")}`))
+const io = new Server(server)
 
-routerSocket.get('/', async (req, res) => {
-  res.render("index", {
-    titulo: "Desafio 4",
-    products: productos
-  });
-});
+const messageData = await getManagerMessages()
+const managerMessage = new messageData.ManagerMessageMongoDB();
+const productData = await getManagerProducts()
+const managerProduct = new productData.ManagerProductMongoDB();
 
+io.on("connection", async (socket) => {
+    console.log("Cliente conectado")
+    socket.on("message", async (info) => {
+            managerMessage.addElements([info]).then(() => {
+            managerMessage.getElements().then((mensajes) => {
+                socket.emit("allMessages", mensajes)
+            })
+        })
+    })
+    managerMessage.getElements().then((mensajes) => {
+        socket.emit("allMessages", mensajes)
+    })
+    managerProduct.getElements().then((products) => {
+        socket.emit("getProducts", products)
+    })
+    socket.on("addProduct", async (info) => {
+        managerProduct.addElements([info]).then(() => {
+            managerProduct.getElements().then((products) => {
+            socket.emit("getProducts", products)
+        })
+    })
+    })
 
-const io = new Server(server);
+    socket.on("deleteProduct", async id=>{
+        managerProduct.deleteElement(id).then(() => {
+            managerProduct.getElements().then((products) => {
+            socket.emit("getProducts", products)
+            })
+        })
+    })
+})
 
-io.on("connection", async(socket)=>{
-  console.log("Cliente conectado");
-  socket.on("addProduct", (data) =>{
-    productos.push(data);
-    io.sockets.emit('productos', productos);
-    io.sockets.emit('getProducts', productos);
-  });
-  socket.on("deleteProduct", (data)=>{
-    productos = productos.filter((producto) => producto.id != data);
-    io.sockets.emit('getProducts', productos);
-  });
-  socket.emit("getProducts",  productos);
-});
-
-app.use(express.json());
-app.use(express.urlencoded({extended: true}));
-app.engine('handlebars', engine());
-app.set('view engine', 'handlebars');
-app.set('views', path.resolve(__dirname, './views'));
-app.use('/', express.static(__dirname + '/public'));
-app.use('/api/products', routerProduct);
-app.use('/', routerSocket);
+app.use('/', routerSocket)
+app.use('/chat', routerChat)
+app.use('/', express.static(__dirname + '/public'))
+app.use('/api/products', routerProduct)
+app.use("/api/carts", routerCart)
