@@ -1,6 +1,5 @@
 import fs from "fs";
 
-
 const rutaArchivoCart = "src/dao/FileSystem/Files/carts.json"
 const rutaArchivoProducts =  "src/dao/FileSystem/Files/products.json"
 class Cart {
@@ -25,7 +24,7 @@ export class CartManager {
         let contenido = await fs.promises.readFile(this.path, "utf-8");
         let aux = JSON.parse(contenido);
         if (aux.length > 0) {
-            const idAutoincremental = aux[aux.length - 1].id + 1; //Esto para que sea incremental dependiendo del ultimo elemento
+            const idAutoincremental = aux[aux.length - 1].id + 1;
             let carrito = new Cart(idAutoincremental, []);
             aux.push(carrito)
             await fs.promises.writeFile(this.path, JSON.stringify(aux));
@@ -38,7 +37,7 @@ export class CartManager {
             return `Carrrito vacio creado con el id: ${idAutoincremental}`
         }
     }
-    existsProductById= async(id)=> { //Solamente para comprobar si existe
+    existsProductById= async(id)=> {
         let contenido = await fs.promises.readFile(rutaArchivoProducts, 'utf-8')  
         let aux = JSON.parse(contenido)
         let valor=false;
@@ -57,7 +56,6 @@ export class CartManager {
         let index = carritos.findIndex(cart => cart.id ===idCart);
         const existe = await this.existsProductById(idProduct)
 
-        //Productos para ver el stock maximo
         let responseAwaitProducts = await fs.promises.readFile(rutaArchivoProducts, 'utf-8')  
         let arrayProductosFromJSON = JSON.parse(responseAwaitProducts);
     
@@ -71,7 +69,7 @@ export class CartManager {
                 let pos = arrayProductosFromJSON.findIndex(product => product.id === idProduct)
                 let productoJSON = arrayProductosFromJSON[pos];
                 if (index!=-1){
-                    if (productoJSON.stock>0 && productoJSON.stock >= carritos[idCart-1].products[index].quantity+quantity) //Controlo que no se exceda del stock maximo
+                    if (productoJSON.stock>0 && productoJSON.stock >= carritos[idCart-1].products[index].quantity+quantity)
                     {
                         carritos[idCart-1].products[index].quantity+=quantity;   
                         await fs.promises.writeFile(this.path, JSON.stringify(carritos));                
@@ -82,7 +80,7 @@ export class CartManager {
                 }
                 else
                 {
-                    if (productoJSON.stock>0 && productoJSON.stock >= quantity ) //Controlo que no se exceda del stock maximo
+                    if (productoJSON.stock>0 && productoJSON.stock >= quantity )
                     {
                         carritos[idCart-1].products.push({idProduct,quantity});
                         await fs.promises.writeFile(this.path, JSON.stringify(carritos));                
@@ -101,7 +99,7 @@ export class CartManager {
       
 
     }
-    getAllCarts= async()=> { //Este no es requerido por la entrega pero lo agrego para el testing de la misma
+    getAllCarts= async()=> {
         if (this.checkArchivo()){                        
             let contenido = await fs.promises.readFile(this.path, 'utf-8')  
             return JSON.parse(contenido);
@@ -158,29 +156,3 @@ export class CartManager {
       
     }
 }
-
-
-// const manager = new CartManager("../models/carts.json");
-
-// const tests = async ()=>{
-//     await manager.crearArchivo();
-//     await manager.crearCarritoVacio(); 
-//     await manager.crearCarritoVacio(); 
-
-//     await manager.crearCarritoVacio(); 
-
-//     await manager.crearCarritoVacio(); 
-//     await manager.crearCarritoVacio(); 
-//     await manager.crearCarritoVacio(); 
-//     await manager.crearCarritoVacio(); 
-//     await manager.addProductToCart(1,1,2);
-//     await manager.addProductToCart(1,9,60);
-//     await manager.addProductToCart(1,2,60);
-//     console.log(await manager.getAllCartProducts(1))
-
-//     // console.log(await manager.getAllCartProducts(1));
-
-
-// }
-
-// tests();

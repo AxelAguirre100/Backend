@@ -57,7 +57,7 @@ export class ProductManager {
                     let contenido = await fs.promises.readFile(this.path, "utf-8");
                     let aux = JSON.parse(contenido);
                     if (aux.length>0){
-                        const idAutoincremental = aux[aux.length-1].id+1; //Esto para que sea incremental dependiendo del ultimo elemento
+                        const idAutoincremental = aux[aux.length-1].id+1;
                         aux.push({ id: idAutoincremental, ...newProduct });
                         await fs.promises.writeFile(this.path, JSON.stringify(aux));
                         return "Producto Agregado"
@@ -177,8 +177,7 @@ export class ProductManager {
         return [producto1,producto2,producto3,producto4,producto5,producto6,producto7,producto8,producto9]
     }
     cargarArchivo = async () => {
-        //tests pedidos y adicionales:
-        await this.crearArchivo(); //Es para que si no tiene el array vacio al inicio se lo ponga así evitamos errores, y para asegurarnos que existe el archivo
+        await this.crearArchivo();
         await this.addProduct(producto1);
         await this.addProduct(producto2);
         await this.addProduct(producto3);
@@ -189,19 +188,5 @@ export class ProductManager {
         await this.addProduct(producto8);
         await this.addProduct(producto9);
         await this.addProduct(producto10);
-
     }
-
 }
-// const manager = new ProductManager('../models/products.json');
-// const tests = async()=>{
-//     await manager.updateProduct({id:1,title:"2",description:"3",price:"4",thumbnail:["5"],code:"6",stock:"7",status:false,category:"9"})
-// };
-
-// tests();
-
-
-
-
-// tests()
-

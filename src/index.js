@@ -10,6 +10,7 @@ import { engine } from 'express-handlebars';
 import * as path from 'path'
 import routerChat from "./routes/chat.routes.js";
 import { ProductManager } from "./dao/FileSystem/models/ProductManager.js";
+import mongoose from "mongoose";
 const app = express()
 
 const productManager = new ProductManager("src/dao/FileSystem/Files/products.json");
@@ -28,6 +29,18 @@ const messageData = await getManagerMessages()
 const managerMessage = new messageData.ManagerMessageMongoDB();
 const productData = await getManagerProducts()
 const managerProduct = new productData.ManagerProductMongoDB();
+
+const ConnectMongoDB = async () => {
+    try {
+        await mongoose.connect('mongodb+srv://axelentoo:Etor25oUbZgzCUno@cluster0.fxgrzcu.mongodb.net/?retryWrites=true&w=majority')
+        console.log("conectado")
+    } catch (error) {
+        console.log(error)
+        process.exit();
+    }
+}
+
+ConnectMongoDB();
 
 io.on("connection", async (socket) => {
     console.log("Cliente conectado")
