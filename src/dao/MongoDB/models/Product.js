@@ -1,5 +1,6 @@
 import { ManagerMongoDB } from "../../../db/mongoDBManager.js";
 import { Schema } from "mongoose";
+import paginate from "mongoose-paginate-v2";
 
 const url = process.env.URLMONGODB
 
@@ -41,10 +42,26 @@ const productSchema = new Schema({
 
 
 
-export class ManagerProductMongoDB extends ManagerMongoDB {
+productSchema.plugin(paginate);
+
+export class productManagerMongoDB extends ManagerMongoDB {
     constructor() {
         super(url, "products", productSchema)
-        //Aqui irian los atributos propios de la clase
     }
-    //Aqui irian los metodos propios de la clase
+    async paginate(filtro,opciones){
+        this.setConnection();
+        try{
+            return await this.model.paginate(filtro,opciones)
+        }catch(error){
+            return error;
+        }
+    }
+    async aggregate(opciones){
+        this.setConnection();
+        try{
+            return await this.model.aggregate(opciones)
+        }catch(error){
+            return error;
+        }
+    }
 }
