@@ -3,30 +3,40 @@ import express from "express";
 import { Server } from "socket.io";
 import { getmessageManagers, getproductManagers} from "./dao/daoManager.js";
 import { __dirname, __filename } from "./path.js";
-import rutasEnInicio from "./routes/rutasEnInicio.routes.js";
-import routerProduct from "./routes/products.routes.js";
-import routerCart from "./routes/cart.routes.js";
+import session from 'express-session'
+import multer from 'multer'
 import { engine } from 'express-handlebars';
 import * as path from 'path'
-import routerChat from "./routes/chat.routes.js";
-import mongoose from "mongoose";
-const app = express()
-import productManager from "./dao/ManagersGeneration/productManager.js";
+import MongoStore from 'connect-mongo'
+import cookieParser from 'cookie-parser'
+import router from "./routes/index.routes.js";
 
+const app = express()
+
+app.use(cookieParser(process.env.SIGNED_COOKIE))
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
-
-const ConnectMongoDB = async () => {
-    try {
-        await mongoose.connect('mongodb+srv://axelentoo:Etor25oUbZgzCUno@cluster0.fxgrzcu.mongodb.net/?retryWrites=true&w=majority')
-        console.log("conectado")
-    } catch (error) {
-        console.log(error)
-        process.exit();
+app.use(session({
+    store: MongoStore.create({
+        mongoUrl: process.env.URLMONGODB,
+        mongoOptions: { useNewUrlParser: true, useUnifiedTopology: true },
+        ttl: 200
+    }),
+    //store: new fileStore({ path: './sessions', ttl: 10000, retries: 1 }),
+    secret: process.env.SESSION_SECRET,
+    resave: true,
+    saveUninitialized: true
+}))
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, 'src/public/img')
+    },
+    filename: (req, file, cb) => {
+        cb(null, `${Date.now()}${file.originalname}`)
     }
-}
+})
 
-ConnectMongoDB();
+const upload = multer({ storage: storage })
 
 //Handlebars
 app.engine("handlebars", engine());
@@ -34,7 +44,7 @@ app.set("view engine", "handlebars");
 app.set("views", path.resolve(__dirname, "./views"));
 
 //PUERTO
-app.set("port", process.env.PORT || 8080)
+app.set("port", process.env.PORT || 5000)
 
 const server = app.listen(app.get("port"), () => console.log(`Server on port ${app.get("port")}`))
 
@@ -59,8 +69,4 @@ io.on("connection", async (socket) => {
 })
 
 //Routes
-app.use('/', rutasEnInicio)
-app.use('/chat', routerChat)
-app.use('/', express.static(__dirname + '/public'))
-app.use('/api/products', routerProduct)
-app.use("/api/carts", routerCart)
+app.use('/',router) 

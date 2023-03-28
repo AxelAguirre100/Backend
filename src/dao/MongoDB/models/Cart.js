@@ -81,7 +81,20 @@ export class cartManagerMongoDB extends ManagerMongoDB {
 
     async updateAllCartItems(cid, productos){
         const cart = await this.getElementById(cid);
-        cart.products=productos;
+        const productosParaActualizar = await Promise.all(productos.map(async (producto) => {
+            let productOnDB = await productManager.getElementById(producto.productId)
+            if (producto.quantity < productOnDB.stock){
+                productOnDB.stock-=producto.quantity;
+                productOnDB.save();
+                return producto;
+            } else {
+                console.log("No se puede ingresar un producto que no tiene stock suficiente")
+                return null;
+            }
+        }));
+        const productosValidos = productosParaActualizar.filter(p => p !== null);
+        console.log(productosValidos);
+        cart.products = productosValidos;
         cart.save();
         return "Carrito Actualizado Completamente"
     }

@@ -1,6 +1,5 @@
 import { Router } from "express";
 const routerProduct = Router();
-import { getproductManagers } from "../dao/daoManager.js";
 import productManager from "../dao/ManagersGeneration/productManager.js"
 
 routerProduct.get("/", async (req, res) => {
@@ -44,11 +43,11 @@ routerProduct.get("/", async (req, res) => {
             ordenamiento=-1;
         }
         
-        resultado={docs:await productManager.aggregate([{$sort: {price: ordenamiento}}])}  //Para cambiar el factor de ordenamiento se cambia el "title" por el campo que se quiere ordenar
+        resultado={docs:await productManager.aggregate([{$sort: {price: ordenamiento}}])}
         resultadoOperaciones="success";
     }
     const resultadoFinalPayload = {
-        status:resultadoOperaciones, //a
+        status:resultadoOperaciones,
         payload:resultado.docs,
         totalPages: resultado.totalPages,
         prevPage:resultado.prevPage,
@@ -72,7 +71,7 @@ routerProduct.get("/:pid", async (req, res) => {
 
 routerProduct.post('/', async(req,res)=>{
     try{
-        await productManager.addElements(req.body); //Hacerle controles
+        await productManager.addElements(req.body);
         res.send("Producto Agregado")
     }catch{
         res.send("Hubo un error al agregar el producto")

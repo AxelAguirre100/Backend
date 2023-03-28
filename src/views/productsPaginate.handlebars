@@ -1,3 +1,5 @@
+<h1 class="tituloProductsPaginate">Bienvenido {{nombreUsuario}} {{apellidoUsuario}}</h1>
+<p class="tituloProductsPaginate">Está en calidad de: {{role}}</p>
 <form id="productForm" class="formularioAddProduct">
   <div class="form-group">
     <label for="title">Title</label>
@@ -27,17 +29,22 @@
     <label for="category">Category</label>
     <input type="text" class="form-control" id="category">
   </div>
+
   <button type="submit" class="btn btn-primary">Agregar</button>
 </form>
 
 <div class="productsCardsContainer">
   <div id="productsCard" class="productsCardClass row">
-    {{!-- ACA VAN LOS PRODUCTOS HECHOS CARD --}}
+    
   </div>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.6.0/socket.io.js"
     integrity="sha512-rwu37NnL8piEGiFhe2c5j4GahN+gFsIn9k/0hkRY44iz0pc81tBNaUN56qF8X4fy+5pgAAgYi2C9FXdetne5sQ=="
     crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <script src="js/products.js"></script>
+
 </div>
+
+
 <div id="contenedorBotonesPaginas" class="centrarBotones">
+
 </div>
