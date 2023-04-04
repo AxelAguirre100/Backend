@@ -46,26 +46,29 @@ export class ManagerUserMongoDB extends ManagerMongoDB {
         }
     }
     async createUser(req,res){
-        const {first_name, last_name, email, age, rol, password } = req.body
-        try {
-            const user = await this.getElementByEmail(email)
-            if (user) {
-                return "Usuario ya existente"
-            }else{
-                const hashPassword = createHash(password);
-                await this.addElements([{ 
-                    first_name:first_name, 
-                    last_name:last_name, 
-                    email:email, 
-                    age:age, 
-                    rol:rol, 
-                    password:hashPassword }])                    
-                return "Usuario Agregado"
-            }
-        } catch (error) {
-            console.error(error)
-            return error;
-        }
+        // const {first_name, last_name, email, age, rol, password } = req.body
+        // try {
+        //     const user = await this.getElementByEmail(email)
+        //     if (user) {
+        //         return "Usuario ya existente"
+        //     }else{
+        //         const hashPassword = createHash(password);
+        //         await this.addElements([{ 
+        //             first_name:first_name, 
+        //             last_name:last_name, 
+        //             email:email, 
+        //             age:age, 
+        //             rol:rol, 
+        //             password:hashPassword }])                    
+        //         return "Usuario Agregado"
+        //     }
+            
+    
+        // } catch (error) {
+        //     console.error(error)
+        //     return error;
+        // }
+        return "Usuario agregado"
     }
 
     async checkLogin(email,password){

@@ -1,7 +1,6 @@
 import userManager from "./userManager.js";
 import { validatePassword } from "../../utils/bcrypt.js";
 
-
 export const loginTest = async(req,res)=>{
     const {email,password} = req.body;
     try {
@@ -33,5 +32,5 @@ export const loginTest = async(req,res)=>{
 }
 
 export const loginControl = (req, res, next) => {
-    req.session.login ? next() : res.redirect('/api/session/login')
+    req.session.login ? next() : res.redirect('/authSession/githubSession')
 }
