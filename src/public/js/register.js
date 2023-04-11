@@ -29,7 +29,7 @@ botonRegistro.addEventListener("click",async(e)=>{
                     rol:"User",
                     password:password1
                 }
-                await fetch('/user/', {
+                await fetch('/user/register', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
