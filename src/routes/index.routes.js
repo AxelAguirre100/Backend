@@ -23,8 +23,8 @@ router.use('/', express.static(__dirname + '/public'))
 router.get('/products', loginControl, async (req, res) => {
     res.render("productsPaginate", {
         titulo: "Desafio Backend",
-        nombreUsuario: req.session.user.first_name,
-        apellidoUsuario: req.session.user.last_name,
+        nombreUsuario: req.session.first_name,
+        apellidoUsuario: req.session.last_name,
     })
 })
 
