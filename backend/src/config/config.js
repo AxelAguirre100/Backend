@@ -26,5 +26,6 @@ export default {
     SESSION_SECRET: process.env.SESSION_SECRET,
     SIGNED_COOKIE: process.env.SIGNED_COOKIE,
     CLIENT_SECRET: process.env.CLIENT_SECRET,
-    CLIENT_ID: process.env.CLIENT_ID
+    CLIENT_ID: process.env.CLIENT_ID,
+    EMAIL: process.env.EMAIL
 };

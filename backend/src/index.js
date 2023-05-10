@@ -36,7 +36,7 @@ const JWT_SECRET = config.JWT_SECRET
 //MIDDLEWARES
 app.use(cookieParser(SIGNED_COOKIE))
 app.use(express.json())
-app.use(cors(corsOptions))
+//app.use(cors(corsOptions))
 app.use(express.urlencoded({ extended: true }))
 app.use(session({
     store: MongoStore.create({

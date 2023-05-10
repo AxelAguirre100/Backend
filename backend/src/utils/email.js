@@ -1,4 +1,7 @@
 import nodemailer from 'nodemailer'
+import config from '../config/config.js'
+
+const EMAIL = config.EMAIL
 
 let transporter = nodemailer.createTransport({ //Genero la forma de enviar info desde mail (o sea, desde Gmail con x cuenta)
     host: 'smtp.gmail.com', //Defino que voy a utilizar un servicio de Gmail
@@ -6,7 +9,7 @@ let transporter = nodemailer.createTransport({ //Genero la forma de enviar info 
     secure: true,
     auth: {
         user: "axelentoo@gmail.com", //Mail del que se envia informacion
-        pass: "khjdninwcjkbkewv",
+        pass: EMAIL,
         authMethod: 'LOGIN'
     }
 })
