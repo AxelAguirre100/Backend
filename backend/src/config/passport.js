@@ -4,6 +4,10 @@ import GitHubStrategy from 'passport-github2';
 import { createHash, validatePassword } from '../utils/bcrypt.js';
 import { findUserByEmail, findUserById, createUser } from '../services/UserService.js';
 import { createCart } from '../services/cartService.js';
+import config from './config.js';
+
+const CLIENT_ID = config.CLIENT_ID
+const CLIENT_SECRET = config.CLIENT_SECRET
 
 const LocalStrategy = local.Strategy;
 
@@ -54,8 +58,8 @@ export const initializePassport = () => {
     }));
 
     passport.use('github', new GitHubStrategy({
-        clientID: process.env.CLIENT_ID,
-        clientSecret: process.env.CLIENT_SECRET,
+        clientID: CLIENT_ID,
+        clientSecret: CLIENT_SECRET,
         callbackURL: 'http://localhost:8080/auth/github/callback'
     }, async (accessToken, refreshToken, profile, done) => {
 
