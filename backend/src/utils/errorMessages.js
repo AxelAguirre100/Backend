@@ -20,9 +20,12 @@ export const passportError = (strategy) => {
 
 export const roleVerification = (roles) => {
     let bandera = 0
+
     return async (req, res, next) => {
-        const userAccess = req.user.user
-        if (!req.user) {
+        console.log(req.session.user)
+        const userAccess = req.session.user
+
+        if (!req.session.user) {
             return res.status(401).send({ error: "User no autorizado" })
         }
 

@@ -38,3 +38,5 @@ export const createUser = async (user) => {
         throw new Error(error)
     }
 }
+
+
