@@ -1,4 +1,4 @@
-import productModel from "../models/MongoDB/productModel.js"
+import productModel from "../../dao/models/MongoDB/productModel.js"
 
 export const findProducts = async () => {
     try {

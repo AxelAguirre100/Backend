@@ -1,4 +1,4 @@
-import ticketModel from "../models/MongoDB/ticketModel.js";
+import ticketModel from "../../dao/models/MongoDB/ticketModel.js";
 
 export const findTicket = async () => {
     try {

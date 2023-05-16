@@ -2,20 +2,21 @@ import local from 'passport-local';
 import passport from 'passport';
 import GitHubStrategy from 'passport-github2';
 import { createHash, validatePassword } from '../utils/bcrypt.js';
-import { findUserByEmail, findUserById, createUser } from '../services/UserService.js';
-import { createCart } from '../services/cartService.js';
+import { findUserByEmail, findUserById, createUser } from '../dto/services/UserService.js';
+import { createCart } from '../dto/services/cartService.js';
 import config from './config.js';
+const LocalStrategy = local.Strategy;
 
 const CLIENT_ID = config.CLIENT_ID
 const CLIENT_SECRET = config.CLIENT_SECRET
 
-const LocalStrategy = local.Strategy;
 
 export const initializePassport = () => {
 
     passport.use('register', new LocalStrategy(
         { passReqToCallback: true, usernameField: 'email' }, async (req, username, password, done) => {
             const { first_name, last_name, email, age } = req.body;
+
 
             try {
                 const user = await findUserByEmail(username)

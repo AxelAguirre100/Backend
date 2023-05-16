@@ -1,5 +1,5 @@
 import { createNewMessage,returnMessages } from "../services/messageService.js";
-import { io } from "../index.js";
+import { io } from "../../index.js";
 
 export const sendMessage = async (req, res) => {
     const { first_name, email, message } = req.body;

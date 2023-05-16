@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { loginUser, registerUser, destroySession, getSession } from "../controllers/sessionController.js";
+import { loginUser, registerUser, destroySession, getSession } from "../dto/controllers/sessionController.js";
 const routerSession = Router()
 
 routerSession.post("/register", registerUser)

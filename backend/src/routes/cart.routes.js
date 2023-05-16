@@ -1,6 +1,6 @@
 import { Router } from "express";
-import { getCart, updateCartProducts, addProductToCart, updateProductQuantity, deleteAllProductsFromCart, deleteOneProductFromCart } from "../controllers/cartController.js";
-import { generateTicketAndSave } from "../controllers/ticketController.js";
+import { getCart, updateCartProducts, addProductToCart, updateProductQuantity, deleteAllProductsFromCart, deleteOneProductFromCart } from "../dto/controllers/cartController.js";
+import { generateTicketAndSave } from "../dto/controllers/ticketController.js";
 import { roleVerification } from "../utils/errorMessages.js";
 const routerCarts = Router();
 
@@ -11,5 +11,5 @@ routerCarts.post('/product/:pid',roleVerification(["Usuario"]), addProductToCart
 routerCarts.put('/product/:pid',roleVerification(["Usuario"]), updateProductQuantity);
 routerCarts.delete('/',roleVerification(["Usuario"]), deleteAllProductsFromCart);
 routerCarts.delete('/product/:pid',roleVerification(["Usuario"]), deleteOneProductFromCart);
-routerCarts.post('/purchase',roleVerification(["Usuario"]),generateTicketAndSave)
+routerCarts.post('/:cid/purchase',roleVerification(["Usuario"]),generateTicketAndSave)
 export default routerCarts

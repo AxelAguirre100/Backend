@@ -1,4 +1,4 @@
-import messageModel from "../models/MongoDB/messageModel.js"
+import messageModel from "../../dao/models/MongoDB/messageModel.js"
 
 export const createNewMessage = async (message) => {
     try {

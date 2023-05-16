@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { roleVerification } from "../utils/errorMessages.js";
-import { sendMessage, getMessages } from "../controllers/chatController.js";
+import { sendMessage, getMessages } from "../dto/controllers/chatController.js";
 const routerSocket = Router();
 
 
