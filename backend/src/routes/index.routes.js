@@ -8,6 +8,7 @@ import routerCarts from "./cart.routes.js";
 import routerUtils from "./utils.routes.js";
 import routerSocket from "./socket.routes.js";
 import routerMocking from "./mocking.routes.js";
+import routerLogger from "./logger.routes.js";
 const routerIndex = Router()
 
 routerIndex.use("/auth", routerSession)
@@ -19,4 +20,5 @@ routerIndex.use("/api/cart",routerCarts)
 routerIndex.use("/utils", routerUtils)
 routerIndex.use("/socket", routerSocket)
 routerIndex.use("/api",routerMocking)
+routerIndex.use("/loggerTest",routerLogger)
 export default routerIndex

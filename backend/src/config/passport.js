@@ -34,7 +34,7 @@ export const initializePassport = () => {
                     password: hashPassword,
                     idCart: cart._id
                 })
-                console.log(newUser)
+                //console.log(newUser)
                 return done(null, newUser);
             } catch (error) {
                 return done(error);

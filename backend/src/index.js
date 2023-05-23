@@ -12,7 +12,7 @@ import routerIndex from './routes/index.routes.js';
 import { Server } from "socket.io";
 import compression from 'express-compression'
 import errorHandler from './middlewares/errors/errorhandler.js';
-import {CustomError} from './utils/errors/customErrors.js';
+import { addLogger } from './utils/logger.js';
 
 const whiteList = ['http://localhost:3000'] //Rutas validas a mi servidor
 //CORS (Me da problemas por eso comentado)
@@ -73,14 +73,15 @@ const connectionMongoose = async () => {
 connectionMongoose()
 
 app.use(cookieParser(JWT_SECRET))
-
+app.use(addLogger)
 
 app.use("/", routerIndex)
-app.use(errorHandler)
+//app.use(errorHandler)
 
 
 const server = app.listen(4000, () => {
     console.log(`Server on port 4000`)
+    console.log(config);
 })
 
 export const io = new Server(server, {

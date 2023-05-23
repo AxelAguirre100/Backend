@@ -14,7 +14,7 @@ console.log("Mode Option: ", program.opts().mode);
 const environment = program.opts().mode;
 
 dotenv.config({
-    path:environment==="production"?"./src/config/.env":"./src/config/.env"
+    path:environment==="production"?"./src/config/.env.production":"./src/config/.env.development"
 });
 
 
@@ -27,5 +27,6 @@ export default {
     SIGNED_COOKIE: process.env.SIGNED_COOKIE,
     CLIENT_SECRET: process.env.CLIENT_SECRET,
     CLIENT_ID: process.env.CLIENT_ID,
-    EMAIL: process.env.EMAIL
+    EMAIL: process.env.EMAIL,
+    LOGGER_TYPE: process.env.LOGGER_TYPE
 };
