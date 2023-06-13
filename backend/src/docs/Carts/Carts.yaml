@@ -1,0 +1,356 @@
+paths:
+  /api/cart/:
+    get:
+      summary: "Devuelve el carrito de la sesion actual"
+      tags:
+        - CartGet
+      responses:
+        "200":
+          description: "Carrito devuelto correctamente"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#components/schemas/CartPopulateResponse"
+        "401":
+          description: "Usuario no autorizado"
+        "500":
+          description: "Error fatal al intentar mostrar el carrito"
+    put:
+      summary: "Modifica el contenido entero del carrito"
+      tags:
+        - CartPut
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NewCartPut"
+      responses:
+        "200":
+          description: "Carrito actualizado correctamente"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#components/schemas/CartPopulateResponse"
+        "401":
+          description: "Usuario no autorizado"
+        "500":
+          description: "Error fatal al intentar modificar el carrito"
+
+
+
+    delete:
+      summary: "Vacia el carrito"
+      tags:
+        - CartDelete
+      responses:
+        "200":
+          description: "Carrito vaciado correctamente"
+        "401":
+          description: "Usuario no autorizado"
+        "500":
+          description: "Error fatal al intentar vaciar el carrito"
+  /api/cart/product/{pid}:     
+    post:
+      summary: "Agrega un producto al carrito del usuario que esta logueado"
+      tags:
+        - CartPost
+      parameters:
+      - name: pid
+        in: path
+        required: true
+        description: "Id del producto que desea agregar"
+        schema: 
+          $type: string
+      responses:
+        "200":
+          description: "Producto agregado correctamente"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#components/schemas/CartPopulateResponse"
+        "401":
+          description: "Usuario no autorizado"
+        "500":
+          description: "Error fatal al intentar mostrar el carrito"
+
+
+
+    put:
+      summary: "Actualiza/modifica la cantidad del producto indicado por el pid"
+      tags:
+        - CartPut
+      parameters:
+      - name: pid
+        in: path
+        required: true
+        description: "Id del producto que desea modificar su cantidad"
+        schema: 
+          $type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                quantity:
+                  type: number
+              required:
+                - quantity
+            example:
+              quantity: 13
+      responses:
+        "200":
+          description: "Cantidad del producto actualizada en el carrito"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#components/schemas/CartPopulateResponse"
+        "401":
+          description: "Usuario no autorizado"
+        "500":
+          description: "Error fatal al intentar la cantidad del carrito"
+
+    delete:
+      summary: "Borra un producto del carrito del usuario logueado"
+      tags:
+        - CartDelete
+      parameters:
+      - name: pid
+        in: path
+        required: true
+        description: "Id del producto que desea eliminar"
+        schema: 
+          $type: string
+      responses:
+        "200":
+          description: "Producto eliminado correctamente"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#components/schemas/CartPopulateResponseDelete"
+        "401":
+          description: "Usuario no autorizado"
+        "500":
+          description: "Error fatal al intentar borrar el producto del carrito"
+
+
+  /purchase/:
+    post:
+      summary: "Realiza la generacion del token y envia el mail al usuario"
+      tags:
+        - CartPost
+      responses:
+        "200":
+          description: "Ticket generado correctamente"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#components/schemas/TicketResponse"
+        "404":
+          description: "Alguno de los productos no estaba disponible"
+        "401":
+          description: "Usuario no autorizado"
+        "500":
+          description: "Error fatal al intentar realizar el ticket"
+
+
+
+
+components:
+  schemas:
+    CartPopulateResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          description: "Mensaje de la operacion realizada correctamente"
+        cart:
+          type: object
+          properties:
+            _id:
+              type: string
+              description: "ID proporcionado por mongodb"
+            products:
+              type: array
+              items:
+                type: object
+                properties:
+                  productId:
+                    type: object
+                    properties:
+                      _id:
+                        type: string
+                        description: "ID del producto proporcionado por mongodb"
+                      title:
+                        type: string
+                        description: "Título del producto"
+                      description:
+                        type: string
+                        description: "Descripción del producto"
+                      code:
+                        type: string
+                        description: "Código del producto"
+                      price:
+                        type: number
+                        description: "Precio del producto"
+                      status:
+                        type: boolean
+                        description: "Estado del producto"
+                      stock:
+                        type: integer
+                        description: "Cantidad disponible en stock"
+                      category:
+                        type: string
+                        description: "Categoría del producto"
+                      thumbnails:
+                        type: array
+                        items:
+                          type: string
+                        description: "Lista de imágenes en miniatura del producto"
+                      __v:
+                        type: integer
+                        description: "Versión del producto"
+                  quantity:
+                    type: integer
+                    description: "Cantidad del producto en el carrito"
+                  _id:
+                    type: string
+                    description: "ID del producto en el carrito"
+            __v:
+              type: integer
+      example:
+        message: "Operacion sobre el carrito realizada correctamente"
+        cart: {_id: "641a1e8be7ba02a998f2ce8a", products: [{ productId: { _id: "641a10c0e7ba02a998f2ce76", title: "Remera", description: "Remera adidas negra", code: "abc1", "price": 10000, status: true, stock: 30, category: "Remera", thumbnails: [ "ejemplo.jpg", "ejemplo2.jpg"], __v: 3 }, quantity: 4, _id: "641a1ef1e7ba02a998f2ce94" },{ productId: { _id: "641a411d4372b33a2f51f116", title: "Remera", description: "Remera nike Blanca", code: "abc2", "price": 9000, status: true, stock: 19, category: "Remera", thumbnails: [ "ejemplo.jpg", "ejemplo2.jpg" ], __v: 3 }, quantity: 1, _id: "641a4a86699e145e2969302f" }]} 
+
+
+
+
+    NewCartPut:
+      type: array
+      items:
+        type: object
+        properties:
+          productId:
+            type: string
+            description: "ID del producto"
+          quantity:
+            type: number
+            description: "Cantidad del producto"
+      example:
+        [{productId: "641a411d4372b33a2f51f116", quantity: 1 },{productId: "641a41744372b33a2f51f123", quantity: 3 } ]
+
+
+
+
+
+    CartPopulateResponseDelete:
+      type: object
+      properties:
+        message:
+          type: string
+          description: "Mensaje de la operacion realizada correctamente"
+        cart:
+          type: object
+          properties:
+            _id:
+              type: string
+              description: "ID proporcionado por mongodb"
+            products:
+              type: array
+              items:
+                type: object
+                properties:
+                  productId:
+                    type: object
+                    properties:
+                      _id:
+                        type: string
+                        description: "ID del producto proporcionado por mongodb"
+                      title:
+                        type: string
+                        description: "Título del producto"
+                      description:
+                        type: string
+                        description: "Descripción del producto"
+                      code:
+                        type: string
+                        description: "Código del producto"
+                      price:
+                        type: number
+                        description: "Precio del producto"
+                      status:
+                        type: boolean
+                        description: "Estado del producto"
+                      stock:
+                        type: integer
+                        description: "Cantidad disponible en stock"
+                      category:
+                        type: string
+                        description: "Categoría del producto"
+                      thumbnails:
+                        type: array
+                        items:
+                          type: string
+                        description: "Lista de imágenes en miniatura del producto"
+                      __v:
+                        type: integer
+                        description: "Versión del producto"
+                  quantity:
+                    type: integer
+                    description: "Cantidad del producto en el carrito"
+                  _id:
+                    type: string
+                    description: "ID del producto en el carrito"
+            __v:
+              type: integer
+      example:
+        message: "Operacion sobre el carrito realizada correctamente"
+        cart: {_id: "641a1e8be7ba02a998f2ce8a", products: [{ productId: { _id: "641a411d4372b33a2f51f116", title: "Remera", description: "Remera nike Blanca", code: "abc2", "price": 9000, status: true, stock: 19, category: "Remera", thumbnails: [ "ejemplo.jpg", "ejemplo2.jpg" ], __v: 3 }, quantity: 1, _id: "641a4a86699e145e2969302f"}]} 
+
+
+
+
+    TicketResponse:
+      type: object
+      properties:
+        messate:
+          type: string
+          description: "Mensaje de la operacion realizada"
+        ticket:
+          type: object
+          properties:
+            _id:
+              type: string
+              description: "Id del ticket generado por y para la base de datos"
+            code:
+              type: number
+              description: "Codigo incremental del ticket"
+            amount:
+              type: number
+              description: "Cantidad de productos comprados"
+            buyerEmail:
+              type: string
+              description: "Emai del comprador"
+            purchase_dateTime:
+              type: string
+              description: "Timestam del momento en el que se hizo la compra"
+            __v:
+              type: number
+              description: "Version del registro"
+      example:
+        message: "Ticket generado, se vació el carrito"
+        ticket: {_id: "6463f17da3e4042b00e526d7", code: 10, amount: 1, buyerEmail: "user", purchase_dateTime: "2023-06-09T08:28:54.388Z", __v: 0}

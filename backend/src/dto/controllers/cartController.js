@@ -17,11 +17,14 @@ export const getCart = async (req, res) => {
             }
 
             const cartPopulate = await cart.populate({ path: "products.productId", model: productModel })
-            res.status(200).json({ cartPopulate });
+            res.status(200).json({ 
+                message: "Carrito devuelto correctamente",
+                cart: cartPopulate 
+            });
 
         } catch (error) {
             req.logger.fatal("Fatal error/Server connection")
-            res.status(500).send({
+            res.status(500).json({
                 message: "Hubo un error en el servidor", 
                 error: error.message
             })
@@ -37,25 +40,29 @@ export const updateCartProducts = async (req, res) => {
     if (req.session.login) {
         const idCart = req.session.user.idCart;
         const info = req.body;
-
         try {
-            const products = await updateCart(idCart, { products: info });
-            req.logger.info("Cart updated")
-            return res.status(200).send("Carrito actualizado")
+            await updateCart(idCart, { products: info });
+            const cart = await findCartById(idCart)
+            req.logger.info("Cart updated");
+            return res.status(200).json({
+                message: "Carrito actualizado",
+                cart: await cart.populate({ path: "products.productId", model: productModel })
+            });
 
         } catch (error) {
-            req.logger.fatal("Fatal error/Server connection")
-            res.status(500).send({
+            req.logger.fatal("Fatal error/Server connection");
+            res.status(500).json({
                 message: "Hubo un error en el servidor", 
                 error: error.message
-            })
+            });
         }
 
     } else {
-        req.logger.error("Session not found")
-        return res.status(401).send("No existe sesion activa")
+        req.logger.error("Session not found");
+        return res.status(401).json({ message: "No existe sesión activa" });
     }
 }
+
 
 export const addProductToCart = async (req, res, next) => {
     if (req.session.login) {
@@ -85,7 +92,11 @@ export const addProductToCart = async (req, res, next) => {
         
                         await cart.save();
                         req.logger.info("New Product in the cart, id:"+idProduct)
-                        return res.status(200).send("Producto agregado al carrito")
+                        return res.status(200).json({
+                            message:"Producto agregado al carrito",
+                            cart: await cart.populate({ path: "products.productId", model: productModel })
+
+                        })
                     }
         
                 } catch (error) {
@@ -124,7 +135,10 @@ export const updateProductQuantity = async (req, res) => {
 
             cart.products[productIndex].quantity = newQuantity;
             await cart.save();
-            return res.status(200).send("Cantidad del producto actualizada")
+            return res.status(200).json({
+                message:"Cantidad del producto actualizada",
+                cart: await cart.populate({ path: "products.productId", model: productModel })
+            })
 
         } catch (error) {
             req.logger.fatal("Fatal error/Server connection")
@@ -145,7 +159,7 @@ export const deleteAllProductsFromCart = async (req, res) => {
 
         try {
             await updateCart(idCart, { products: [] });
-            return res.status(200).send("Productos borrados")
+            return res.status(200).json({message:"Productos borrados"})
 
         } catch (error) {
             req.logger.fatal("Fatal error/Server connection")
@@ -175,7 +189,10 @@ export const deleteOneProductFromCart = async (req, res) => {
 
             cart.products.splice(productIndex, 1);
             await cart.save();
-            return res.status(200).send("El producto ha sido eliminado del carrito")
+            return res.status(200).json({
+                message:"El producto ha sido eliminado del carrito",
+                cart: await cart.populate({ path: "products.productId", model: productModel })
+            })
 
 
         } catch (error) {

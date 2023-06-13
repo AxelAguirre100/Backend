@@ -13,6 +13,9 @@ import { Server } from "socket.io";
 import compression from 'express-compression'
 import errorHandler from './middlewares/errors/errorhandler.js';
 import { addLogger } from './utils/logger.js';
+import { __dirname } from "./path.js";
+import swaggerJSDoc from 'swagger-jsdoc'
+import swaggerUiExpress from 'swagger-ui-express'
 
 const whiteList = ['http://localhost:3000'] //Rutas validas a mi servidor
 //CORS (Me da problemas por eso comentado)
@@ -95,3 +98,22 @@ export const io = new Server(server, {
         maxAge: 3600,
     },
 }); 
+
+const swaggerOptions = {
+    definition:{
+        openapi: '3.0.1',
+        info:
+        {
+            title: "Doc Backend Santiago Basso",
+            description: "API para un ecommerce hecha en NodeJS para Coderhouse"
+        }
+    },
+    apis: [`${__dirname}/docs/**/*.yaml`]
+}
+
+
+
+
+const specs = swaggerJSDoc(swaggerOptions)
+
+app.use('/apidocs', swaggerUiExpress.serve, swaggerUiExpress.setup(specs))

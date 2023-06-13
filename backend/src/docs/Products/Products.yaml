@@ -1,0 +1,349 @@
+paths:
+  /api/product/:
+    get:
+      summary: "Devuelve todos los productos existentes en la base de datos"
+      tags: 
+        - ProductsGet
+      responses:
+        "200":
+          description: "Productos devueltos correctamente"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#components/schemas/ProductPaginate"
+        "500":
+          description: "Error fatal al intentar obtener los productos"
+
+
+
+
+    post:
+      summary: "Crear un nuevo producto"
+      tags:
+        - ProductsPost
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProductNew"
+      responses:
+        "200":
+          description: "Producto creado correctamente"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductDBResponse"
+        "401":
+          description: "Usuario no autorizado"
+        "500":
+          description: "Error al crear el producto"
+
+
+
+
+  /api/product/{pid}:
+    get:
+      summary: "Devuelve el producto con el id proporcionado"
+      tags:
+        - ProductsGet
+      parameters:
+      - name: pid
+        in: path
+        required: true
+        description: "id del producto que se quiere devolver"
+        schema: 
+          $type: string
+      responses:
+        "200":
+          description: "Producto encontrado, contenido devuelto"
+          content:
+            application/json:
+              schema:
+                $ref: "#components/schemas/Product"
+        "500":
+          description: "Error al buscar el producto"
+
+
+
+
+
+    put:
+      summary: "Actualizar/Modificar un producto"
+      tags:
+        - ProductsPut
+      parameters:
+      - name: pid
+        in: path
+        required: true
+        description: "id del producto que quiere modificar"
+        schema: 
+          $type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProductUpdate"
+      responses:
+        "200":
+          description: "Producto actualizado correctamente"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductDBResponse"
+        "401":
+          description: "Usuario no autorizado"
+        "404":
+          description: "Producto no encontrado"
+        "500":
+          description: "Error fatal al intentar actualizar el producto"
+
+    delete:
+      summary: "Eliminar un producto"
+      tags:
+        - ProductsDelete
+      parameters:
+      - name: pid
+        in: path
+        required: true
+        description: "id del producto que se quiere eliminar"
+        schema: 
+          $type: string
+      responses:
+        "200":
+          description: "Producto eliminado correctamente"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProductDBResponse"
+        "401":
+          description: "Usuario no autorizado"
+        "404":
+          description: "Producto no encontrado"
+        "500":
+          description: "Error fatal al intentar eliminar el producto"
+
+          
+
+
+
+
+components:
+  schemas:
+    Product:
+      type: object
+      properties:
+        _id:
+          type: string
+          description: "Id del producto"
+        title:
+          type: string
+          description: "Titulo del producto"
+        description:
+          type: string
+          decription: "Descripcion del producto"
+        code:
+          type: string
+          description: "Codigo unico del producto"
+        price:
+          type: number
+          description: "Precio del producto"
+        status:
+          type: boolean
+          description: "Estado del producto, activo o inactivo"
+        stock:
+          type: number
+          description: "El stock actual del producto"
+        category:
+          type: string
+          description: "Categoria del producto"
+        thumbnails:
+          type: array
+          description: "Imagenes del producto"
+        __v:
+          type: number
+          description: "Version del registro"
+      example:
+        _id: "641a272fe7ba02a998f2ceae"
+        title: "Remera"
+        description: "Remera adidas negra"
+        code: "abc1"
+        price: 10000
+        status: true
+        stock: 30
+        category: "Remera"
+        thumbnails: ["ejemplo.jpg", "ejemplo2.jpg"]
+        __v: 1
+
+
+
+    ProductNew:
+      type: object
+      properties:
+        title:
+          type: string
+          description: "Titulo del producto"
+        description:
+          type: string
+          decription: "Descripcion del producto"
+        code:
+          type: string
+          description: "Codigo unico del producto"
+        price:
+          type: number
+          description: "Precio del producto"
+        status:
+          type: boolean
+          description: "Estado del producto, activo o inactivo"
+        stock:
+          type: number
+          description: "El stock actual del producto"
+        category:
+          type: string
+          description: "Categoria del producto"
+        thumbnails:
+          type: array
+          description: "Imagenes del producto"
+      example:
+        title: "Remera"
+        description: "Remera adidas negra"
+        code: "abc1"
+        price: 10000
+        status: true
+        stock: 22
+        category: "Remera"
+        thumbnails: ["ejemplo.jpg", "ejemplo2.jpg"]
+
+
+
+    ProductUpdate:
+      type: object
+      properties:
+        title:
+          type: string
+          description: "Titulo del producto"
+        description:
+          type: string
+          decription: "Descripcion del producto"
+        price:
+          type: number
+          description: "Precio del producto"
+        status:
+          type: boolean
+          description: "Estado del producto, activo o inactivo"
+        stock:
+          type: number
+          description: "El stock actual del producto"
+        category:
+          type: string
+          description: "Categoria del producto"
+        thumbnails:
+          type: array
+          description: "Imagenes del producto"
+      example:
+        title: "Remera"
+        description: "Remera adidas negra"
+        price: 10000
+        status: true
+        stock: 22
+        category: "Remera"
+        thumbnails: ["ejemplo.jpg", "ejemplo2.jpg"]
+
+
+
+    ProductDBResponse:
+      type: object
+      properties:
+        message: 
+          type: string
+          description: "Resultado de la consulta"
+        product:
+          type: object
+          description: "Producto agregado"
+          properties:
+            _id:
+              type: ObjectId
+              description: "Id Autogenerado"
+            title:
+              type: string
+              description: "Titulo del producto"
+            description:
+              type: string
+              decription: "Descripcion del producto"
+            code:
+              type: string
+              description: "Codigo unico del producto"
+            price:
+              type: number
+              description: "Precio del producto"
+            status:
+              type: boolean
+              description: "Estado del producto, activo o inactivo"
+            stock:
+              type: number
+              description: "El stock actual del producto"
+            category:
+              type: string
+              description: "Categoria del producto"
+            thumbnails:
+              type: array
+              description: "Imagenes del producto"
+            __v:
+              type: string
+              description: "Version del producto"
+      example:
+        message: "Producto Creado/Actualizado/Modificado/Eliminado Correctamente"
+        product: {product: { _id: "641a411d4372b33a2f51f116", title: "Remera", description: "Remera nike Blanca", code: "abc2", price: 9000, status: true, stock: 1, category: "9000", thumbnails: [ ejemplo.jpg, ejemplo2.jpg], __v: 0 }}
+
+
+
+
+
+
+    ProductPaginate:
+      type: object
+      properties:
+        status:
+          type: string
+          description: "Estado de la solicitud"
+        payload:
+          type: array
+          description: "Productos devuetlos"
+        totalPages:
+          type: number
+          description: "Numero de paginas totales"
+        prevPage:
+          type: number
+          description: "Numero de la pagina anterior"
+        nextPage:
+          type: number
+          description: "Numero de la pagina siguiente"
+        page:
+          type: number
+          description: "Numero de la pagina actual"
+        hasPrevPage:
+          type: boolean
+          description: "Si tiene pagina anterior T/F"
+        hasNextPage:
+          type: boolean
+          description: "Si tiene pagina siguiente T/F"    
+        nextLink:
+          type: string
+          description: "Link de la pagina siguiente"
+        prevLink:
+          type: string
+          description: "Link de la pagina anterior"
+      example:
+        status: "success"
+        payload: [ {"_id": "641a41514372b33a2f51f11f","title": "Pantalon","description": "Pantalones Adidas","code": "abc3","price": 6000,"status": true,"stock": 1,"category": "No","thumbnails": ["645564456"],"__v": 0}]
+        totalPages: 5
+        prevPage: 1
+        nextPage: 3
+        page: 2
+        hasPrevPage: true
+        hasNextPage: true
+        nextLink: "https://localhost:4000/api/product?page=3"
+        prevLink: "https://localhost:4000/api/product?page=1"

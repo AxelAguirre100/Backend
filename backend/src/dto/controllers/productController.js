@@ -2,10 +2,8 @@ import { findProductById, insertProducts, updateOneProduct, paginateProducts, de
 import { CustomError } from '../../utils/errors/customErrors.js';
 import { ErrorEnum } from "../../utils/errors/errorEnum.js";
 import { generateAddProductErrorInfo } from "../../utils/errors/errorInfo.js";
+
 export const getProducts = async (req, res, next) => {
-
-
-
     const { limit = 10, page = 1, sort = "", category = "" } = req.query;
 
     const filters = { stock: { $gt: 0 } };
@@ -46,7 +44,6 @@ export const getProducts = async (req, res, next) => {
 
 export const getProduct = async (req, res) => {
     const idProduct = req.params.pid;
-
     try {
         const product = await findProductById(idProduct);
         return res.status(200).json(product)
@@ -75,13 +72,14 @@ export const addProducts = async (req, res, next) => {
                     price: info.price,
                     stock: info.stock,
                     category: info.category,
-                    thumbnails: info.thumbnails
+                    thumbnails: info.thumbnails,
                 }),
                 code: ErrorEnum.MISSING_FIELDS
             })
             req.logger.fatal("Missing fields, product:"+info)
         }else{
             try {
+                console.log(info)
                 const products = await insertProducts(info);
                 res.status(200).send({
                     message: 'Productos agregados correctamente',
@@ -103,20 +101,21 @@ export const addProducts = async (req, res, next) => {
     }
 }
 
-export const updateProduct = async (req, res) => {
+export const updateProduct = async (req, res) => { 
     const idProduct = req.params.pid;
     const info = req.body;
 
     try {
-        const product = await updateOneProduct(idProduct, info);
-
+        await updateOneProduct(idProduct, info);
+        const product = await findProductById(idProduct)
         if (product) {
             return res.status(200).json({
-                message: "Producto actualizado"
+                message: "Producto actualizado",
+                product: product
             });
         }
 
-        res.status(200).json({
+        res.status(404).json({
             message: "Producto no encontrado"
         });
 
@@ -133,20 +132,21 @@ export const deleteProduct = async (req, res) => {
 
     try {
         const product = await deleteOneProduct(idProduct);
-
+        console.log(product)
         if (product) {
             return res.status(200).json({
-                message: "Producto eliminado"
+                message: "Producto eliminado",
+                product: product
             });
         }
 
-        res.status(200).json({
+        res.status(404).json({
             message: "Producto no encontrado"
         });
 
     } catch (error) {
         req.logger.fatal("Fatal error: "+error.message)
-        res.status(500).send({
+        res.status(500).json({
             error: error.message
         });
     }
