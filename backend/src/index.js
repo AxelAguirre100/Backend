@@ -86,8 +86,8 @@ app.use(addLogger)
 app.use("/", routerIndex)
 //app.use(errorHandler)
 
-
-const server = app.listen(4000, () => {
+const port = process.env.PORT || 4000;
+const server = app.listen(port, () => {
     console.log(`Server on port 4000`)
     // console.log(config);
 })
