@@ -31,6 +31,10 @@ const userSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: 'Carts',
         required: true
+    },
+    last_login: {
+        type: Date,
+        default: null
     }
 })
 

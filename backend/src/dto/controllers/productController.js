@@ -1,7 +1,6 @@
-import { findProductById, insertProducts, updateOneProduct, paginateProducts, deleteOneProduct } from "../services/productService.js";
-import { CustomError } from '../../utils/errors/customErrors.js';
-import { ErrorEnum } from "../../utils/errors/errorEnum.js";
-import { generateAddProductErrorInfo } from "../../utils/errors/errorInfo.js";
+import { findProductById, insertProducts, updateOneProduct, paginateProducts, deleteOneProduct } from "../../dao/services/productService.js";
+import { getSessionObject } from "../controllers/sessionController.js";
+import { sendDeleteNotification } from "../../utils/email.js";
 
 export const getProducts = async (req, res, next) => {
     const { limit = 10, page = 1, sort = "", category = "" } = req.query;
@@ -34,74 +33,78 @@ export const getProducts = async (req, res, next) => {
             nextLink: nextLink
         })
     } catch (error) {
-        req.logger.fatal("Fatal error: "+error.message)
+        req.logger.fatal("Fatal error: " + error.message)
         res.status(500).send({ error: error.message })
     }
-
-
-
 }
 
 export const getProduct = async (req, res) => {
-    const idProduct = req.params.pid;
     try {
-        const product = await findProductById(idProduct);
-        return res.status(200).json(product)
-
+        const productId = req.params.pid;
+        const product = await findProductById(productId);
+        if (!product) {
+            return res.status(404).json({
+                message: "El producto no existe"
+            });
+        }
+        return res.status(200).json(product);
     } catch (error) {
-        req.logger.fatal("Fatal error looking for the product")
-        res.status(500).send({
-            message: "Error al buscar el producto",
+        req.logger.fatal("Error fatal al buscar el producto");
+        res.status(500).json({
+            message: "Hubo un error en el servidor",
             error: error.message
         });
     }
-}
+};
 
-export const addProducts = async (req, res, next) => {
-    const info = req.body;
+export const addProducts = async (req, res,) => {
     try {
-        if (!info.title || !info.description || !info.code || !info.price || !info.stock || !info.category || !info.thumbnails) 
-        {
-            CustomError.createError({
-                name: "Add products error",
-                message: "missing fields",
-                cause: generateAddProductErrorInfo({
-                    title: info.title,
-                    description: info.description,
-                    code: info.code,
-                    price: info.price,
-                    stock: info.stock,
-                    category: info.category,
-                    thumbnails: info.thumbnails,
-                }),
-                code: ErrorEnum.MISSING_FIELDS
-            })
-            req.logger.fatal("Missing fields, product:"+info)
-        }else{
-            try {
-                console.log(info)
-                const products = await insertProducts(info);
-                res.status(200).send({
-                    message: 'Productos agregados correctamente',
-                    products: products
-                });
-    
-            } catch (error) {
-                req.logger.fatal("Fatal error: "+error.message)
-                res.status(500).send({
-                    error: error.message
-                });
-            }
+        const user = await getSessionObject(req, res);
+        const info = req.body;
+
+        if (!info.title || !info.description || !info.code || !info.price || !info.stock || !info.category || !info.thumbnails) {
+            return res.status(400).json({
+                message: "Faltan campos requeridos para agregar productos"
+            });
         }
 
-        
-    }
-    catch (error) {
-        next(error)
-    }
-}
+        if (user) {
+            info.owner = user._id;
+        }
 
-export const updateProduct = async (req, res) => { 
+        const products = await insertProducts(info);
+
+        res.status(200).json({
+            message: 'Productos agregados correctamente',
+            products: products
+        });
+    } catch (error) {
+        req.logger.fatal("Error fatal: " + error.message);
+        res.status(500).json({
+            message: "Hubo un error en el servidor",
+            error: error.message
+        });
+    }
+};
+
+export const updateProduct = async (req, res) => {
+    const user = await getSessionObject(req, res);
+    if (user.rol == "Premium") {
+        const product = await findProductById(req.params.pid);
+        if (product) {
+            if (product.owner != user._id) {
+                return res.status(200).json({
+                    message: "You can't modify products if you're not the owner"
+                })
+            }
+        } else {
+            return res.status(200).json({
+                message: "Product not found"
+            })
+        }
+
+    }
+
     const idProduct = req.params.pid;
     const info = req.body;
 
@@ -120,7 +123,7 @@ export const updateProduct = async (req, res) => {
         });
 
     } catch (error) {
-        req.logger.fatal("Fatal error: "+error.message)
+        req.logger.fatal("Fatal error: " + error.message)
         res.status(500).send({
             error: error.message
         });
@@ -129,11 +132,26 @@ export const updateProduct = async (req, res) => {
 
 export const deleteProduct = async (req, res) => {
     const idProduct = req.params.pid;
+    const user = await getSessionObject(req, res);
+    if (user.rol == "Premium") {
+        const product = await findProductById(req.params.pid);
+        if (product) {
+            if (product.owner != user._id) {
+                return res.status(200).json({
+                    message: "You can't delete products if you're not the owner"
+                })
+            }
+        } else {
+            return res.status(200).json({
+                message: "Product not found"
+            })
+        }
+    }
 
     try {
         const product = await deleteOneProduct(idProduct);
-        console.log(product)
         if (product) {
+            await sendDeleteNotification(user)
             return res.status(200).json({
                 message: "Producto eliminado",
                 product: product
@@ -145,7 +163,7 @@ export const deleteProduct = async (req, res) => {
         });
 
     } catch (error) {
-        req.logger.fatal("Fatal error: "+error.message)
+        req.logger.fatal("Fatal error: " + error.message)
         res.status(500).json({
             error: error.message
         });

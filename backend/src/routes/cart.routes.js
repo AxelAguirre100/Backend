@@ -4,12 +4,11 @@ import { generateTicketAndSave } from "../dto/controllers/ticketController.js";
 import { roleVerification } from "../utils/errorMessages.js";
 const routerCarts = Router();
 
-
-routerCarts.get('/',roleVerification(["Admin","Usuario"]), getCart); //El admin puede verlo pero no modificarlo
-routerCarts.put('/',roleVerification(["Usuario"]), updateCartProducts); //Solo el usuario puede manejar su cart
-routerCarts.post('/product/:pid',roleVerification(["Usuario"]), addProductToCart); 
-routerCarts.put('/product/:pid',roleVerification(["Usuario"]), updateProductQuantity);
-routerCarts.delete('/',roleVerification(["Usuario"]), deleteAllProductsFromCart);
-routerCarts.delete('/product/:pid',roleVerification(["Usuario"]), deleteOneProductFromCart);
-routerCarts.post('/:cid/purchase',roleVerification(["Usuario"]),generateTicketAndSave)
+routerCarts.get('/', getCart);
+routerCarts.put('/',roleVerification(["Usuario","Premium"]), updateCartProducts);
+routerCarts.post('/product/:pid',roleVerification(["Usuario","Premium"]), addProductToCart); 
+routerCarts.put('/product/:pid',roleVerification(["Usuario","Premium"]), updateProductQuantity);
+routerCarts.delete('/',roleVerification(["Usuario","Premium"]), deleteAllProductsFromCart);
+routerCarts.delete('/product/:pid',roleVerification(["Usuario","Premium"]), deleteOneProductFromCart);
+routerCarts.post('/purchase',roleVerification(["Usuario","Premium"]),generateTicketAndSave)
 export default routerCarts

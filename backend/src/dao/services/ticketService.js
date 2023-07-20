@@ -22,15 +22,14 @@ export const createTicket = async (ticket) => {
         await newTicket.save()
         return newTicket
     } catch (error) {
-        throw new Error(error)
+        throw new Error(error);
     }
 }
-//NO DOY LA OPCION DE ELIMINAR EL TICKET YA QUE UNA VEZ GENERADO YA DEBERÍA QUEDAR GUARDADO SIEMPRE
 
-export const returnLastCode = async()=>{
-    try{
+export const returnLastCode = async () => {
+    try {
         return await ticketModel.findOne().sort('-code').exec();
-    }catch(error){
-        throw new Error(error)
+    } catch (error) {
+        throw new Error(error);
     }
 }

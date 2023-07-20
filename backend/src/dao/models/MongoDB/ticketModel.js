@@ -1,29 +1,32 @@
 import { Schema, model } from "mongoose";
 
 const ticketSchema = new Schema({
-    code:{
+    code: {
         type: Number,
         unique: true,
-        required:true
+        required: true
     },
-    purchase_dateTime:{
+    purchase_dateTime: {
         type: Date,
         default: Date.now,
-        required:true
+        required: true
     },
-    amount:{
-        type: Number,
-        default: 1,
-        required:true
-    },
-    buyerEmail:{
+    buyerEmail: {
         type: String,
-        required:true
+        required: true
+    },
+    products: [
+        {
+            productName: { type: String, required: true },
+            quantity: { type: Number, required: true }
+        }
+    ],
+    total: {
+        type: Number,
+        required: true
     }
-})
+});
 
+const ticketModel = model("Ticket", ticketSchema);
 
-
-const ticketModel = model("Ticket", ticketSchema)
-
-export default ticketModel
+export default ticketModel;

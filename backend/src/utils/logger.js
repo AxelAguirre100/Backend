@@ -40,7 +40,6 @@ const prodLogger = winston.createLogger({
         })
     ]
 })
-//Elegimos cual de los 2 logger utilizar dependiendo de la variable de entorno
 const getLogger = () => {
     if (LOGGER === "prod") {
         return prodLogger
@@ -48,7 +47,6 @@ const getLogger = () => {
         return devLogger
     }
 }
-//Exportamos el middleware
 export const addLogger = (req, res, next) => {
     req.logger = getLogger()
     req.logger.info(`Metodo: ${req.method} en ${req.url} - ${new Date().toLocaleTimeString()} `)

@@ -29,9 +29,8 @@ export const deleteCart = async (id) => {
 export const updateCart = async (id, info) => {
     try {
         const cart =  await cartModel.findByIdAndUpdate(id, info)
-        console.log(cart)
         return cart
     } catch (error) {
         throw new Error(error);
-    }
+s    }
 }

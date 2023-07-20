@@ -6,8 +6,8 @@ const routerProduct = Router();
 
 routerProduct.get('/', getProducts); 
 routerProduct.get('/:pid', getProduct);
-routerProduct.post('/', addProducts);
-routerProduct.put('/:pid', updateProduct);
-routerProduct.delete('/:pid', deleteProduct); 
+routerProduct.post('/',roleVerification(["Admin","Premium"]), addProducts);
+routerProduct.put('/:pid',roleVerification(["Admin","Premium"]), updateProduct);
+routerProduct.delete('/:pid',roleVerification(["Admin","Premium"]), deleteProduct);
 
 export default routerProduct

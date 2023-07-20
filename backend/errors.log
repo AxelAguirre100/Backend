@@ -1,5 +1,3 @@
-warning: Esto es un WARNING, no se encontro el producto deseado
+fatal: User not allowed
+fatal: Error fatal: MongoBulkWriteError: E11000 duplicate key error collection: test.products index: code_1 dup key: { code: "asd" }
 fatal: Esto es un error FATAL, no existe el producto que desea
-fatal: User not allowed
-fatal: User not allowed
-fatal: User not allowed
