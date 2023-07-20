@@ -10,7 +10,7 @@ import { initializePassport } from './config/passport.js'
 import routerIndex from './routes/index.routes.js';
 import { Server } from "socket.io";
 import compression from 'express-compression'
-import errorHandler from './middlewares/errors/errorhandler.js';
+// import errorHandler from './middlewares/errors/errorhandler.js';
 import { addLogger } from './utils/logger.js';
 import { __dirname } from "./path.js";
 import swaggerJSDoc from 'swagger-jsdoc'
