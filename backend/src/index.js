@@ -89,7 +89,7 @@ app.use("/", routerIndex)
 
 const server = app.listen(4000, () => {
     console.log(`Server on port 4000`)
-    //console.log(config);
+    // console.log(config);
 })
 
 export const io = new Server(server, {

@@ -8,11 +8,20 @@ program
     .option('--mode <mode>', 'Modo de trabajo', 'develop')
 program.parse();
 
-
 const environment = program.opts().mode;
 
+let dotenvPath;
+
+if (environment === 'production') {
+  dotenvPath = './src/config/.env.production';
+} else if (environment === 'development') {
+  dotenvPath = './src/config/.env.development';
+} else {
+  dotenvPath = './src/config/.env';
+}
+
 dotenv.config({
-    path: environment === "production" ? "./src/config/.env.production" : "./src/config/.env.development"
+  path: dotenvPath
 });
 
 export default {
