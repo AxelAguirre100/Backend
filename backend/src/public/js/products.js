@@ -1,7 +1,3 @@
-import { url } from "./config.js";
-
-console.log(url)
-
 const renderizarProductos = async () => {
     try {
         const response = await fetch(`${url}/api/products`, {

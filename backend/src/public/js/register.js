@@ -1,5 +1,3 @@
-import { url } from "./config.js";
-
 const hrefLogin = document.getElementById('hrefLogin')
 hrefLogin.href = `${url}/handlebars/login`;
 

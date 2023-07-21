@@ -1,4 +1,3 @@
-import { url } from './config.js';
 const hrefHome = document.getElementById('Back')
 hrefHome.href = `${url}/handlebars`;
 

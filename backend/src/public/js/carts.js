@@ -1,5 +1,3 @@
-import { url } from "./config.js";
-
 const getCart = async () => {
     const response = await fetch(`${url}/api/cart`, {
         method: 'GET',
