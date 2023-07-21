@@ -16,21 +16,12 @@ import { __dirname } from "./path.js";
 import swaggerJSDoc from 'swagger-jsdoc'
 import { engine } from 'express-handlebars'
 import swaggerUiExpress from 'swagger-ui-express'
+// import cors from 'cors'
 import * as path from 'path';
 
 const whiteList = ['http://localhost:3000'] //Rutas validas a mi servidor
 //CORS (Me da problemas por eso comentado)
-const corsOptions = {
-    origin: (origin, callback) => {
-        if (whiteList.indexOf(origin) !== -1) {
-            callback(null, true)
-        } else {
-            callback(new Error('Not allowed by CORS'))
-        }
-    },
-    // Agrega el encabezado Access-Control-Allow-Origin en todas las respuestas
-    exposedHeaders: 'Access-Control-Allow-Origin'
-}
+
 
 const app = express()
 const MONGODBURL = config.MONGODBURL;
@@ -40,7 +31,7 @@ const SECRET = config.SECRET
 
 app.use(cookieParser(SIGNED_COOKIE))
 app.use(express.json())
-//app.use(cors(corsOptions))
+// app.use(cors());
 app.engine("handlebars", engine());
 app.set("view engine", "handlebars");
 app.set("views", path.resolve(__dirname, "./views"));
@@ -55,6 +46,11 @@ app.use(session({
     secret: SESSION_SECRET,
     resave: true,
     saveUninitialized: true,
+    cookie: {
+        secure: false,
+        httpOnly: true,
+        maxAge: 86400000
+    }
 }));
 
 initializePassport()

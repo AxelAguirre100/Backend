@@ -32,7 +32,7 @@ export const getCart = async (req, res) => {
 
   } else {
     req.logger.error("Session not found")
-    return res.status(401).send("No existe sesion activa")
+    return res.status(401).json({error:"No existe sesion activa"})
   }
 }
 

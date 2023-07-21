@@ -1,5 +1,7 @@
 import { url } from "./config.js";
 
+console.log(url)
+
 const renderizarProductos = async () => {
     try {
         const response = await fetch(`${url}/api/products`, {
@@ -13,7 +15,7 @@ const renderizarProductos = async () => {
         const jsonParsedResponse = await response.json();
         const products = jsonParsedResponse.payload;
         const productContainer = document.getElementById('product-list');
-
+        console.log(products)
         products.forEach((product) => {
             const card = document.createElement('div');
             card.classList.add('col-md-3', 'mb-3');
