@@ -1,4 +1,4 @@
-const url = "http://localhost:4000"
+import { url } from "./config.js";
 
 const hrefLogin = document.getElementById('hrefLogin')
 hrefLogin.href = `${url}/handlebars/login`;

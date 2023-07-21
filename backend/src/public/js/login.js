@@ -1,4 +1,4 @@
-const url = "http://localhost:4000"
+import { url } from "./config.js";
 
 const hrefRegister = document.getElementById('hrefRegister')
 hrefRegister.href = `${url}/handlebars/register`;

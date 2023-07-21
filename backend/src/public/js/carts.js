@@ -1,4 +1,4 @@
-const url = "http://localhost:4000"
+import { url } from "./config.js";
 const getCart = async () => {
     const response = await fetch(`${url}/api/cart`, {
         method: 'GET',
